@@ -3,13 +3,15 @@
 
 # Machine Learning for Mapping Soil Constraints in 3D: GRDC Pilot App
 
-This software is build as a GRDC pilot app for machine learning to transform sparse soil measurements and surface measurements into 3D cube prediction of soil properties and their uncertainties. One of the key features is the probabilistic 3D modeling (cubing), which is data-driven approach and performed via Gaussian Process Priors with a spatial 3D kernel and multiple mean functions to take into account a diverse range of additional covariates (e.g., from satellite data, surface or climate measurements). The app is build with Python (see [Mlsoil](https://github.com/Sydney-Informatics-Hub/MLsoil_GRDCapp)) and includes multiple options via a graphical user interface (GUI) or as a settings file. The four main functionalities are:
+This is a GRDC pilot App for machine learning to transform sparse soil measurements and surface measurements into 3D cube prediction of soil properties and their uncertainties. One of the key features is the probabilistic 3D modeling (cubing), which is data-driven approach and performed via Gaussian Process Priors with a spatial 3D kernel plus multiple mean functions to take into account a diverse range of additional covariates (e.g., from satellite data, surface or climate measurements). The App is build with Python (see [Mlsoil](https://github.com/Sydney-Informatics-Hub/MLsoil_GRDCapp)) and includes multiple options via a graphical user interface (GUI) or as a settings file. The four main functionalities are:
 - Feature importance calculation
 - Model evaluation and ranking
 - Soil predictions in 3D including prediction uncertainties
 - Available water capacity predictions based on soil constraints 
 
 <!--For more model details and theoretical background, please see `docs/description_paper/paper.pdf`.-->
+
+Author: Sebastian Haan (Sydney Informatics Hub at The University of Sydney)
 
 
 ### Example I/O
@@ -186,7 +188,7 @@ The app has been tested given the following soil measurements (see soil example 
 - Sodicity, i.e., Exchangeable Sodium Percentage (ESP)
 - pH value (pH)
 - Electrical conductivity (EC)  
-Given that the underlying machine learning model is a pure data-driven approach, no prior knowledge is reuired as input. Thus, in principle any soil property can be modeled if measurements are provided.
+Given that the underlying machine learning model is a pure data-driven approach, no prior knowledge is required as input. Thus, in principle any soil property can be modeled if measurements are provided.
 
 ### Feature Importance Tests
 
@@ -203,7 +205,7 @@ The following three mean function models are included in conjunction to the Gaus
 
 #### Mean Model Functions
 
-- Bayesian Linear Regression: Before performing linear regression, the App standardizes the data and applies a feature-wise power transform scaler via scikit-learn implementation. Power transforms are a family of parametric, monotonic transformations that are applied to make data more like normal distributed. This is useful for modeling issues related to heteroscedasticity (non-constant variance), or other situations where normality is desired. In detail, the Yeo-Johnson transform [@Yeo:2000] is applied, which support both positive or negative data. After the featurewise scaling of data a first Bayesian Ridge regression is performed using scikit learn implementation `BayesianRidge`. The results of the coefficients and their uncertainty are used to select only significant features (with the ratio correlation coefficient divided by stddev larger than one). Then a second Bayesian Ridge regression is made using only the selected features and the final model and coefficients are stored, with non-significant coefficients set to zero. Predictions and their uncertainties are then obtained by using the trained model and are scale back with power law transform.  For more implementation details see `blr.py`.
+- Bayesian Linear Regression: Before performing linear regression, the App standardizes the data and applies a feature-wise power transform scaler via scikit-learn implementation. Power transforms are a family of parametric, monotonic transformations that are applied to make data more like normal distributed. This is useful for modeling issues related to heteroscedasticity (non-constant variance), or other situations where normality is desired. In detail, the Yeo-Johnson transform [@Yeo:2000] is applied, which support both positive or negative data. After the feature-wise scaling of data a first Bayesian Ridge regression is performed using scikit learn implementation `BayesianRidge`. The results of the coefficients and their uncertainty are used to select only significant features (with the ratio correlation coefficient divided by standard deviation larger than one). Then a second Bayesian Ridge regression is made using only the selected features and the final model and coefficients are stored, with non-significant coefficients set to zero. For more implementation details see `blr.py`.
 
 - Probabilistic Neural Network: The probabilistic neural network is implemented by building a custom tensorflow probability model with automatic feature selection for sparsity. For implementation details see `bnn.py`. This method requires a feature-wise standard scaler.
 
@@ -307,6 +309,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program (see LICENSE.md). If not, see
 <https://www.gnu.org/licenses/>.
 
-<!-- add pagebreaks -->
+<!-- Convert to pdf and docx: -->
 <!-- pandoc -V geometry:margin=1.15in README.md -o docs/MANUAL.pdf -->
 <!-- pandoc -V geometry:margin=1.15in README.md -o docs/MANUAL.docx -->
