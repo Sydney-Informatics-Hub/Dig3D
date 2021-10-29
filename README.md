@@ -3,7 +3,7 @@
 
 # Machine Learning for Mapping Soil Constraints in 3D: GRDC Pilot App
 
-This is a GRDC pilot App for machine learning to transform sparse soil measurements and surface measurements into 3D cube prediction of soil properties and their uncertainties. One of the key features is the probabilistic 3D modeling (cubing), which is data-driven approach and performed via Gaussian Process Priors with a spatial 3D kernel plus multiple mean functions to take into account a diverse range of additional covariates (e.g., from satellite data, surface or climate measurements). The App is build with Python (see [Mlsoil](https://github.com/Sydney-Informatics-Hub/MLsoil_GRDCapp)) and includes multiple options via a graphical user interface (GUI) or as a settings file. The four main functionalities are:
+This is a GRDC Pilot App for machine learning to transform sparse soil measurements and surface measurements into 3D predictions of soil properties and their uncertainties. One of the key features is the probabilistic 3D modeling (cubing), which is data-driven approach and performed via Gaussian Process Priors with a spatial 3D kernel plus multiple mean functions to take into account a diverse range of additional covariates (e.g., from satellite data, surface or climate measurements). The App is build with Python (see [Mlsoil](https://github.com/Sydney-Informatics-Hub/MLsoil_GRDCapp)) and includes multiple options via a graphical user interface (GUI) or as a settings file. The four main functionalities are:
 - Feature importance calculation
 - Model evaluation and ranking
 - Soil predictions in 3D including prediction uncertainties
@@ -24,7 +24,7 @@ Output: Soil properties (e.g., ESP, pH, EC) and their uncertainties as 3D cubes.
 ## Table of Contents
 - [Functionality](#functionality)
 - [Installation And Requirements](#installation-and-requirements)
-	- [Executables for Windows and MacOS](#executables)
+	- [Executables for Windows and MacOS](#executables-for-windows-and-macos)
 	- [Python Installation](#python_installation)
 - [Getting Started](#getting-started) 
 - [Options and Customization](#options-and-customization)
@@ -161,7 +161,7 @@ The easiest way to get the App running and to test its functionalities is to sta
 This will open a GUI window with some predefined settings (here for the sample data Uah as demonstration). To familiarize yourself with the settings and input data  specifications, it is advisable to check the sample data and test multiple run options.
 
 
-### Manual via Concol and Python
+### Manual via Python
 Once the software package and dependencies are installed, you can launch the GUI via python: 
 
 ```sh
@@ -185,14 +185,16 @@ python run_mlsoil.py NAME_OF_SETTINGS_FILE.yaml
 ### Target Soil Properties
 
 The app has been tested given the following soil measurements (see soil example data for Uah):
+
 - Sodicity, i.e., Exchangeable Sodium Percentage (ESP)
 - pH value (pH)
 - Electrical conductivity (EC)  
+
 Given that the underlying machine learning model is a pure data-driven approach, no prior knowledge is required as input. Thus, in principle any soil property can be modeled if measurements are provided.
 
 ### Feature Importance Tests
 
-The importance and significance of factors (here covariates) can be used for, e.g., feature selection, and multiple methods exists to determine their importance.  This App applies two methods for estimating feature importance: 1) Bayesian Linear Regression via significance given by the ratio of correlation coefficient divided by its standard deviation, 2) Random Forest permutation test (note that permutation test has multiple advantages over Random Forest impurity-based feature importance. However, permutation and impurity test assume that features are not correlated with each other). The features significance is presented in a ranked bar chart (see section Output). 
+The importance and significance of factors (covariates) can be used for, e.g., feature selection, and multiple methods exists to determine their importance.  This App applies two methods for estimating feature importance: 1) Bayesian Linear Regression via significance given by the ratio of correlation coefficient divided by its standard deviation, 2) Random Forest permutation test (note that permutation test has multiple advantages over Random Forest impurity-based feature importance. However, permutation and impurity test assume that features are not correlated with each other). The features significance is presented in a ranked bar chart (see section Output). 
 
 ![Feature Importance Configuration](https://github.com/Sydney-Informatics-Hub/Dig3D/blob/main/figures/gui_feature-importance.png?raw=True)
 
@@ -205,9 +207,9 @@ The following three mean function models are included in conjunction to the Gaus
 
 #### Mean Model Functions
 
-- Bayesian Linear Regression: Before performing linear regression, the App standardizes the data and applies a feature-wise power transform scaler via scikit-learn implementation. Power transforms are a family of parametric, monotonic transformations that are applied to make data more like normal distributed. This is useful for modeling issues related to heteroscedasticity (non-constant variance), or other situations where normality is desired. In detail, the Yeo-Johnson transform [@Yeo:2000] is applied, which support both positive or negative data. After the feature-wise scaling of data a first Bayesian Ridge regression is performed using scikit learn implementation `BayesianRidge`. The results of the coefficients and their uncertainty are used to select only significant features (with the ratio correlation coefficient divided by standard deviation larger than one). Then a second Bayesian Ridge regression is made using only the selected features and the final model and coefficients are stored, with non-significant coefficients set to zero. For more implementation details see `blr.py`.
+- Bayesian Linear Regression: Before performing linear regression, the App standardizes the data and applies a feature-wise power transform scaler via scikit-learn implementation. Power transforms are a family of parametric, monotonic transformations that are applied to make data more like normal distributed. This is useful for modeling issues related to heteroscedasticity (non-constant variance), or other situations where normality is desired. In detail, the Yeo-Johnson transform is applied, which support both positive or negative data. After the feature-wise scaling of data a first Bayesian Ridge regression is performed using scikit-learn implementation `BayesianRidge`. The results of the coefficients and their uncertainty are used to select only significant features (with the ratio correlation coefficient divided by standard deviation larger than one). Then a second Bayesian Ridge regression is made using only the selected features and the final model and coefficients are stored, with non-significant coefficients set to zero. For more implementation details see `blr.py`.
 
-- Probabilistic Neural Network: The probabilistic neural network is implemented by building a custom tensorflow probability model with automatic feature selection for sparsity. For implementation details see `bnn.py`. This method requires a feature-wise standard scaler.
+- Probabilistic Neural Network: The probabilistic neural network is implemented by building a custom tensorflow probability model with automatic feature selection for sparsity. For implementation details see `bnn.py`. This method requires a feature-wise standard scaler and includes an automatic feature selection and network pruning.
 
 - Random Forest: The scikit-learn Random Forest model implementation is applied. No data scaler required. Prediction uncertainties are currently estimates by using the standard deviation and Confidence Intervals of all decision trees. For more implementation details and hyper parameter settings see `rf.py`.
 
@@ -217,24 +219,26 @@ The following three mean function models are included in conjunction to the Gaus
 
 Predictions and their uncertainties are generated at any selected resolution (ideally should match resolution of the covariate grid).
 The required input files are: 
-- soil measurement file including the target soil property (ESP, ph, or EC), xy coordinates, lower and upper depth interval, and other covariates such as DEM, NDVI, radiation, EM measurements)
+
+- soil measurement file including the target soil property (ESP, ph, EC), xy coordinates, lower and upper depth interval of measurements, and other surface covariates such as DEM, NDVI, radiation, EM measurements.
 - the grid data file that includes the covariates for the prediction
 The selected features should match the feature names in the soil and grid data. An example of the data files and their specification is provided in the folder `project_example_Uah`. 
 
 The user can select for prediction between the three models (BLR+GP, BNN+GP, RF+GP), which can be based on certain preferences (default BLR+GP) or the result of the model testing (see previous section).
 
-The user can select the minimum and maximum threshold for soil properties (see options `Soil Thresholds`), which creates the corresponding depth constraint map for the predicted soil properties.
+The user can select the minimum and maximum threshold for soil properties (see options `Soil Thresholds`), which creates the corresponding depth constraint map for the predicted soil properties. The threshold value is also used to create maps per depth of the probability exceeding the threshold (see Output example figure).
 
-If predictions should be averaged over a certain volume (e.g., to reduce prediction uncertainty) rather than point predictions (default setting), the user can choose in the settings `Optional Volume Averaging` the prediction type `Volume` and the corresponding size of the volume block (horizontal and vertical resolution) for averaging. The volume averaging method takes into account spatial covariance between points for prediction of the mean and uncertainty. 
+If predictions should be averaged over a certain volume (e.g., to reduce prediction uncertainty) rather than point predictions (default setting), the user can choose in the settings `Optional Volume Averaging` the prediction type `Volume` and the corresponding size of the volume block (horizontal and vertical resolution) for averaging. The volume averaging method takes into account spatial covariance between points for predicting the volume-averaged mean and uncertainty values. 
 
 ![Soil Threshold Configuration](https://github.com/Sydney-Informatics-Hub/Dig3D/blob/main/figures/gui_soil-thresholds.png?raw=True)
 ![Volume Averaging Option](https://github.com/Sydney-Informatics-Hub/Dig3D/blob/main/figures/gui_volume-averaging.png?raw=True)
 
 ### AWC Constraints
 
-The estimation of the available water capacity (AWC) integrated over depth is based on the depth constrain maps for the corresponding soil target which is part of the soil prediction output (see previous section). The required input files are:
+The estimation of the available water capacity (AWC) integrated over depth is based on the depth constrain maps for the corresponding soil target, which are produced as part of the soil prediction output (see previous section). The required input files are:
+
 - AWC Data: a cube of the available water in .tif format, where each band represents the available water capacity at 1 cm depth intervals
-- The depth constrain maps which are generated as part of the soil predictions.
+- The depth constraint maps that are generated as part of the 3D soil predictions.
 
 ![Volume Averaging Option](https://github.com/Sydney-Informatics-Hub/Dig3D/blob/main/figures/gui_awc_constraints.png?raw=True)
 
@@ -248,6 +252,55 @@ In this use case scenario, the following soil measurements are used (see data in
 - optional: available water capacity (AWC) file: .tif file with multiple bands, where each band represents the available water capacity (in mm) at 1 cm depth intervals.
 
 Some of the main results are shown below for feature-importance, model selection, soil predictions, and AWC-Constraints.
+
+### List of Output files
+
+Results feature importance:
+
+- Feature_Importance_RF_permutation.png (Random Forest Permutation Importance)
+- Feature_Significance_linearBLR.png (Bayesian Linear Regression significance)
+- Feature_Significance_powerBLR.png (Bayesian Linear Regression significance with power-law scaled input data)
+
+Results model crossvalidation:
+
+- ESPnfold_summary_stats.csv (summary table)
+- Xvalidation_Residual_hist_ESP.png (histogram of combined residual and theta)
+- for each cross-validation set (default 10, here for  BLR and ESP):
+	- Residual_hist_ESP_nfold1.png (Residual Error Histogram)
+	- pred_vs_trueESP_nfold1.png (Prediction vs Truth)
+	- Hist_ESP_train.png (Histogram of error for training data)
+	- ESP_train.png (ESP subtracted by mean model)
+	- ESP_results_nfold1.csv (summary stats table)
+	- ESP_residualmap.png (map of residual error)
+	- ESP_BLR_pred_vs_true.png (Prediction vs Truth for mean function model only)
+
+Results for soil predictions:
+
+- Depth_ConstrainESP10.tif (geo-referenced tif for depth constraint map)
+- Depth_Constrain_SigmaESP10.tif (geo-referenced tif for uncertainty of depth constraint map)
+- Depth_Constrain_Sigma ESP10.png (map of depth constraint and uncertainty)
+- Pred_ESP_coord_y.txt (cartesian y coordinates for prediction)
+- Pred_ESP_coord_x.txt (cartesian x coordinates for prediction)
+- Pred_ESP_mean.png (Mean of predicted soil property along vertical axis with data location points)
+- Pred_ESP_mean2.png (Mean of predicted soil property along vertical axis with value colored data-points as overlay)
+- for each depth slice:
+	- Pred_ESP_zxxxcm.png (Prediction map of soil property and uncertainty)
+	- Pred_ESP_zxxxcm.tif (geo-referenced tif of prediction map)
+	- Std_ESP_zxxxcm.tif (geo-referenced map of standard deviation of prediction)
+	- Pred_ESP_zxxxcm.txt (values of prediction matching x,y coord location file)
+	- Pred_Stddev_ESP_zxxxcm.txt (values of prediction uncertainty matching x,y coord location file)
+	- Prob_exceedingESP10_zxxxcm.png (Map of probability exceeding threshold)
+	- Prob_exceedingESP10_zxxxcm.png (geo-referenced tif file of probability exceeding threshold)
+
+Results for AWC constraints:
+- Depth_SoilCombined-Constraint.png (map of combined soil constraints)
+- Depth_SoilCombined-Constraint.tif (geo-referenced tif of combined soil constraints)
+- Depth_AWC_SoilCombined-Constraint.png (map of integrated AWC given soil constraints)
+- AWC-SoilCombined-Constraint.tif (geo-referenced tif of AWC given soil constraints)
+- Depth_AWC_NoConstrain.png (map of integrated AWC w/o soil constraints)
+- Combined_AWC-NoConstrain.tif (geo-referenced tif of integrated AWC w/o soil constraints)
+- Depth_AWC_ESP-Constraint.png (map of integrated AWC given soil constraints per soil property type, e.g. ESP)
+- AWC-ESP-Constraint.tif (geo-referenced tif of integrated AWC given soil constraints per soil property type, e.g. ESP)
 
 ![Example feature importance results for ESP. The left panel shows the BLR significance given by the ratio of correlation coefficient to standard deviation. The right panel shows the results of the Random Forest permutation importance.](https://github.com/Sydney-Informatics-Hub/Dig3D/blob/main/figures/Uah_feature-importance.png?raw=True)
 
@@ -297,7 +350,7 @@ Key project contributors to this project are:
 Copyright 2021 Sebastian Haan, The University of Sydney
 
 This is free software: you can redistribute it and/or modify it under
-the terms of the GNU Lesser General Public License (LGPL version 3) as
+the terms of the GNU Lesser General Public License (LGPL version 2.1) as
 published by the Free Software Foundation.
 
 This program is distributed in the hope that it will be useful, but
