@@ -36,7 +36,7 @@ Output: Soil properties (e.g., ESP, pH, EC) and their uncertainties as 3D cubes.
   	- [Spatial Prediction Options](#spatial-prediction-options)
   - [AWC Constraints](#awc-constraints)
 - [Results and Output Files](#results-and-output-files)
-- [Attribution and Acknowledgments](#attribution-and-acknowledgements)
+- [Attribution and Acknowledgments](#attribution-and-acknowledgments)
   - [Project Contributors](#project-contributors)
 - [License](#license)
 
