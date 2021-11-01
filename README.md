@@ -3,7 +3,7 @@
 
 # Machine Learning for Mapping Soil Constraints in 3D: GRDC Pilot App
 
-This is a GRDC Pilot App for machine learning to transform sparse soil measurements and surface measurements into 3D predictions of soil properties and their uncertainties. One of the key features is the probabilistic 3D modeling (cubing), which is data-driven approach and performed via Gaussian Process Priors with a spatial 3D kernel plus multiple mean functions to take into account a diverse range of additional covariates (e.g. terrain, vegetation, top soil properties, depth). The App is build with Python (see [Mlsoil](https://github.com/Sydney-Informatics-Hub/MLsoil_GRDCapp)) and includes multiple options via a graphical user interface (GUI) or as a settings file. The four main functionalities are:
+This is a GRDC Pilot App for machine learning to transform sparse soil measurements and surface measurements into 3D predictions of soil properties and their uncertainties. One of the key features is the probabilistic 3D modeling (cubing), which is data-driven approach and performed via Gaussian Process Priors with a spatial 3D kernel plus multiple mean functions to take into account a diverse range of additional covariates (e.g. terrain, vegetation, top soil properties, depth). The App is built with Python (see [Mlsoil](https://github.com/Sydney-Informatics-Hub/MLsoil_GRDCapp)) and includes multiple options via a graphical user interface (GUI) or as a settings file. The four main functionalities are:
 - Feature importance calculation
 - Model evaluation and ranking
 - Soil predictions in 3D including prediction uncertainties
@@ -81,7 +81,7 @@ The core features are:
  	- csv tables
  	- geolocation-referenced tif
  - Optional support for prediction over volume rather than point predictions
- - Graphical User Interface (GUI) as well as support for python scripting
+ - Graphical User Interface (GUI) as well as support for Python scripting
  - Available as one-click executable App for Windows 10 and MacOS
 
 
