@@ -3,7 +3,7 @@
 
 # Machine Learning for Mapping Soil Constraints in 3D: GRDC Pilot App
 
-This is a GRDC Pilot App for machine learning to transform sparse soil measurements and surface measurements into 3D predictions of soil properties and their uncertainties. One of the key features is the probabilistic 3D modeling (cubing), which is data-driven approach and performed via Gaussian Process Priors with a spatial 3D kernel plus multiple mean functions to take into account a diverse range of additional covariates (e.g., from satellite data, surface or climate measurements). The App is build with Python (see [Mlsoil](https://github.com/Sydney-Informatics-Hub/MLsoil_GRDCapp)) and includes multiple options via a graphical user interface (GUI) or as a settings file. The four main functionalities are:
+This is a GRDC Pilot App for machine learning to transform sparse soil measurements and surface measurements into 3D predictions of soil properties and their uncertainties. One of the key features is the probabilistic 3D modeling (cubing), which is data-driven approach and performed via Gaussian Process Priors with a spatial 3D kernel plus multiple mean functions to take into account a diverse range of additional covariates (e.g. terrain, vegetation, top soil properties, depth). The App is build with Python (see [Mlsoil](https://github.com/Sydney-Informatics-Hub/MLsoil_GRDCapp)) and includes multiple options via a graphical user interface (GUI) or as a settings file. The four main functionalities are:
 - Feature importance calculation
 - Model evaluation and ranking
 - Soil predictions in 3D including prediction uncertainties
@@ -11,7 +11,7 @@ This is a GRDC Pilot App for machine learning to transform sparse soil measureme
 
 <!--For more model details and theoretical background, please see `docs/description_paper/paper.pdf`.-->
 
-Author: Sebastian Haan (Sydney Informatics Hub at The University of Sydney)
+Author: Sebastian Haan, Sydney Informatics Hub at The University of Sydney
 
 
 ### Example I/O
@@ -22,6 +22,7 @@ Output: Soil properties (e.g., ESP, pH, EC) and their uncertainties as 3D cubes.
 
 
 ## Table of Contents
+- [Introduction](#introduction)
 - [Functionality](#functionality)
 - [Installation And Requirements](#installation-and-requirements)
 	- [Executables for Windows and MacOS](#executables-for-windows-and-macos)
@@ -41,22 +42,31 @@ Output: Soil properties (e.g., ESP, pH, EC) and their uncertainties as 3D cubes.
 - [License](#license)
 
 
+## Introduction
+The goal of this project is to develop tools to map fine-scale 3D variability of agronomically important soil constraints, and to map the depth at which these chemical/physical barriers become limiting and impact plant available water capacity (PAWC). These data layers aim to improve prediction of crop yield variability pre- and in-season at the within-field scale, which in turn should improve input management and profitability.
+
+
 ## Functionality
 
 The core features are:
 
- - Probabilistic prediction of 3D soil distributions based on sparse measurements
+- Input: sparse soil measurements at irregular and uncertain depth plus surface measurements of multiple covariates (DEM, Temperature, NDVI, Soiltype, Slope etc).
+- Probabilistic prediction of 3D soil distributions:
  	 - Prediction of spatial covariance via Gaussian Process Regression (GPR) with sparse 3D kernels
 	 - Predictions possible at any scale and resolution
-	 - Generation of uncertainty maps for each depth 
-	 - Multiple options for covariate-dependent mean function of GP: 
-		 - Power-Transformed Bayesian Linear Regression (BLR+GP)
-		 - Bayesian Neural Networks (BNN+GP)
-		 - Random Forest (RF+GP)
+	 - Output maps:
+		- Prediction maps
+		- Uncertainty maps
+		- Depth constrain maps
+		- Probability exceeding treshold maps
 	 - Input Uncertainties taken into account: 
 		 - estimation of measurement uncertainties
 		 - uncertainties of measurement position (e.g. depth intervals) 
 	 - Global GP hyperparameter optimisation
+- Multiple options for covariate-dependent mean function of GP: 
+	- Power-Transformed Bayesian Linear Regression (BLR+GP)
+	- Bayesian Neural Networks (BNN+GP)
+	- Random Forest (RF+GP)
  - Automatic training and evaluation of multiple models (BLR+GP, BNN+GP, RF+GP)
  	- 10-fold cross-validation
  	- residual error analysis
@@ -330,6 +340,7 @@ If you make use of this software for your research project, please include the f
 
 “This research was supported by the Sydney Informatics Hub, a Core Research Facility of the University of Sydney.”
 
+The software development has been funded by the Grains Research & Development Corporation (GRDC) as part of the project for Machine learning to map soil constraint variability and predict crop yield.
 
 ### Project Contributors
 
@@ -363,5 +374,5 @@ along with this program (see LICENSE.md). If not, see
 <https://www.gnu.org/licenses/>.
 
 <!-- Convert to pdf and docx: -->
-<!-- pandoc -V geometry:margin=1.15in README.md -o docs/MANUAL.pdf -->
-<!-- pandoc -V geometry:margin=1.15in README.md -o docs/MANUAL.docx -->
+<!-- pandoc -V geometry:margin=1in README.md -o docs/MANUAL.pdf -->
+<!-- pandoc -V geometry:margin=1in README.md -o docs/MANUAL.docx -->
